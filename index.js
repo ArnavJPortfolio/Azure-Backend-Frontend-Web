@@ -1,5 +1,8 @@
 const { BlobServiceClient } = require("@azure/storage-blob");
 const { BlobService } = require("azure-storage");
+const { DefaultAzureCredential } = require("@azure/identity");
+const { SecretClient } = require("@azure/keyvault-secrets");
+
 const createContainerButton = document.getElementById("create-container-button");
 const deleteContainerButton = document.getElementById("delete-container-button");
 const selectButton = document.getElementById("select-button");
@@ -8,21 +11,74 @@ const listButton = document.getElementById("list-blob-button");
 const listContainerButton = document.getElementById("list-container-button");
 const deleteButton = document.getElementById("delete-button");
 const downloadBlobButton = document.getElementById("download-blob-button");
+const inputSASButton = document.getElementById("SAS-TOKEN-URL");
 const status = document.getElementById("status");
 const fileList = document.getElementById("Blob-list");
 const fileList2 = document.getElementById("Container-list");
-const blobSasUrl = "https://demosolutions.blob.core.windows.net/?sv=2020-02-10&ss=bfqt&srt=sco&sp=rwdlacuptfx&se=2021-06-30T08:49:49Z&st=2021-06-06T00:49:49Z&spr=https,http&sig=ak4SG2N891oTfLvC50fB%2FTu5y2akFuOZSQWSw76oHV8%3D";
-const sasToken = "?sv=2020-02-10&ss=bfqt&srt=sco&sp=rwdlacuptfx&se=2021-06-30T09:08:01Z&st=2021-06-06T01:08:01Z&spr=https,http&sig=jWjrISYn39xe8JN1Zkq%2BxyAZGopUH31REyPSCGPDYMo%3D"
-const storageAccountLink = "https://demosolutions.blob.core.windows.net"
+// "https://demosolutions.blob.core.windows.net/?sv=2020-02-10&ss=bfqt&srt=sco&sp=rwdlacuptfx&se=2021-06-30T08:49:49Z&st=2021-06-06T00:49:49Z&spr=https,http&sig=ak4SG2N891oTfLvC50fB%2FTu5y2akFuOZSQWSw76oHV8%3D"
+var blobSasUrl = "";
+// "?sv=2020-02-10&ss=bfqt&srt=sco&sp=rwdlacuptfx&se=2021-06-30T09:08:01Z&st=2021-06-06T01:08:01Z&spr=https,http&sig=jWjrISYn39xe8JN1Zkq%2BxyAZGopUH31REyPSCGPDYMo%3D"
+var sasToken = "";
+// "https://demosolutions.blob.core.windows.net"
+var storageAccountLink = "";
 
 const reportStatus = message => {
     status.innerHTML += `${message}<br/>`;
     status.scrollTop = status.scrollHeight;
 }
 
+const main = async () => {
+    try {
+        // var keyVaultName = window.prompt("Key-Vault Name: ","Ex:datahub-2");
+        // var KVUri = "https://" + keyVaultName + ".vault.azure.net";
+      
+        // var credential = new DefaultAzureCredential();
+        // var client = new SecretClient(KVUri, credential);
+      
+        // var secretName = window.prompt("Secret Name: ","EX: SAS Token");
+        // var secretValue = await askQuestion("Input your SAS Token > ");
+      
+        // reportStatus("Creating a secret in " + keyVaultName + " called '" + secretName + "' with the value '" + secretValue + "` ...");
+        // await client.setSecret(secretName, secretValue);
+      
+        // reportStatus("Done.");
+      
+      
+        // reportStatus("Assigning your secret to SAS TOKEN ...");
+      
+        // sasToken = await client.getSecret(secretName);
+      
+
+        // var secretName1 = window.prompt("Secret Name: ","EX: BLOB SAS URL");
+        // var secretValue1 = await askQuestion("Input your BLOB SAS URL: ");
+      
+        // reportStatus("Creating a secret in " + keyVaultName + " called '" + secretName1 + "' with the value '" + secretValue1 + "` ...");
+        // await client.setSecret(secretName1, secretValue1);
+      
+        // reportStatus("Done.");
+      
+      
+        // reportStatus("Assigning your secret to blobSasUrl ...");
+      
+        // blobSasUrl = await client.getSecret(secretName1);
+
+        blobSasUrl = window.prompt("BLOB SAS URL: ","Ex:https://demosolutions.blob.core.windows.net/?sv=2020-02-10&ss=bfqt&srt=sco&sp=rwdlacuptfx&se=2021-06-30T08:49:49Z&st=2021-06-06T00:49:49Z&spr=https,http&sig=ak4SG2N891oTfLvC50fB%2FTu5y2akFuOZSQWSw76oHV8%3D")
+        keyVaultName = window.prompt("sasToken: ","Ex:?sv=2020-02-10&ss=bfqt&srt=sco&sp=rwdlacuptfx&se=2021-06-30T09:08:01Z&st=2021-06-06T01:08:01Z&spr=https,http&sig=jWjrISYn39xe8JN1Zkq%2BxyAZGopUH31REyPSCGPDYMo%3D")
+        var storageAccountName = window.prompt("Storage Account Name: ", "Ex:demosolutions")
+        storageAccountLink = "https://" + storageAccountName + ".blob.core.windows.net"
+        blobServiceClient = new BlobServiceClient(blobSasUrl);
+    
+      
+        
+        
+    } catch (error) {
+        reportStatus(error.message);
+    }
+};
+
+main();
 // Create a new BlobServiceClient
-const blobServiceClient = new BlobServiceClient(blobSasUrl);
-const blobService = new BlobService("BlobEndpoint=https://demosolutions.blob.core.windows.net/;QueueEndpoint=https://demosolutions.queue.core.windows.net/;FileEndpoint=https://demosolutions.file.core.windows.net/;TableEndpoint=https://demosolutions.table.core.windows.net/;SharedAccessSignature=sv=2020-02-10&ss=bfqt&srt=sco&sp=rwdlacuptfx&se=2021-06-30T08:49:49Z&st=2021-06-06T00:49:49Z&spr=https,http&sig=ak4SG2N891oTfLvC50fB%2FTu5y2akFuOZSQWSw76oHV8%3D");
+var blobServiceClient = new BlobServiceClient(blobSasUrl);
 
 // Create a unique name for the container by 
 // appending the current time to the file name
@@ -30,6 +86,7 @@ var containerName = "container" + new Date().getTime();
 
 // Get a container client from the BlobServiceClient
 var containerClient = blobServiceClient.getContainerClient(containerName);
+
 
 const createContainer = async () => {
     try {
@@ -44,18 +101,7 @@ const createContainer = async () => {
     }
 };
 
-// const deleteContainer = async () => {
-//     try {
-//         reportStatus(`Deleting container "${containerName}"...`);
-//         await containerClient.delete();
-//         reportStatus(`Done.`);
-//     } catch (error) {
-//         reportStatus(error.message);
-//     }
-// };
-
 createContainerButton.addEventListener("click", createContainer);
-// deleteContainerButton.addEventListener("click", deleteContainer);
 
 const listFiles = async () => {
     fileList.size = 0;
